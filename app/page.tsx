@@ -118,6 +118,9 @@ export default function CareerHelper() {
   const [showMentoringModal, setShowMentoringModal] = useState(false);
   const [payMethod, setPayMethod] = useState<'wechat' | 'alipay'>('alipay');
   const [mentoringPayMethod, setMentoringPayMethod] = useState<'wechat' | 'alipay'>('alipay');
+  const [verifyCode, setVerifyCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
 
   // 初始化主题
   useEffect(() => {
@@ -909,19 +912,63 @@ export default function CareerHelper() {
                 </p>
               </div>
 
+              {/* 验证码输入 */}
+              <div className="mb-4">
+                <label className="block text-xs text-slate-500 dark:text-slate-400 mb-2 text-center">
+                  支付后请输入验证码解锁内容
+                </label>
+                <input
+                  type="text"
+                  value={verifyCode}
+                  onChange={(e) => {
+                    setVerifyCode(e.target.value);
+                    setVerifyError('');
+                  }}
+                  placeholder="请输入验证码"
+                  className="w-full text-center bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 tracking-widest font-mono"
+                />
+                {verifyError && (
+                  <p className="text-xs text-rose-500 text-center mt-2">{verifyError}</p>
+                )}
+              </div>
+
               <button
-                onClick={() => {
-                  setIsPremium(true);
-                  setShowPaymentModal(false);
-                  alert('解锁成功！现在你可以查看完整的会员专享内容了。');
+                onClick={async () => {
+                  if (!verifyCode.trim()) {
+                    setVerifyError('请输入验证码');
+                    return;
+                  }
+                  setVerifying(true);
+                  setVerifyError('');
+                  try {
+                    const res = await fetch('/api/verify', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ code: verifyCode.trim() }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      setIsPremium(true);
+                      setShowPaymentModal(false);
+                      setVerifyCode('');
+                      alert('解锁成功！现在你可以查看完整的会员专享内容了。');
+                    } else {
+                      setVerifyError(data.message || '验证码错误');
+                    }
+                  } catch {
+                    setVerifyError('网络错误，请重试');
+                  } finally {
+                    setVerifying(false);
+                  }
                 }}
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 rounded-xl transition btn-press shadow-lg shadow-emerald-200 dark:shadow-emerald-900/30"
+                disabled={verifying}
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold py-3 rounded-xl transition btn-press shadow-lg shadow-emerald-200 dark:shadow-emerald-900/30 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                ✅ 我已支付，立即查看
+                {verifying ? '验证中...' : '✅ 输入验证码解锁'}
               </button>
 
               <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-3">
-                支付遇到问题？联系邮箱：
+                支付后联系客服获取验证码，联系邮箱：
                 <a
                   href="mailto:2743356935@qq.com"
                   className="text-indigo-500 dark:text-indigo-400 hover:underline"
