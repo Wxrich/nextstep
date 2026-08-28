@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: #f8fafc;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark html,
+.dark body {
+  background: #0f172a;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 渐变文字 */
+.text-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.2);
+}
+.dark .card-hover:hover {
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.4);
+}
+
+/* 输入框聚焦光晕 */
+.input-glow:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* 按钮按压效果 */
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* 步骤条动画 */
+.step-active {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+}
+
+/* 渐入动画 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* 主题切换按钮动画 */
+.theme-toggle-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle-btn:hover {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* 打印时强制浅色模式 */
+@media print {
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  .dark .bg-slate-900,
+  .dark .bg-slate-800 {
+    background: #ffffff !important;
+  }
+  .dark .text-white,
+  .dark .text-slate-200,
+  .dark .text-slate-300 {
+    color: #0f172a !important;
+  }
+}
